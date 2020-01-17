@@ -43,7 +43,7 @@ class Ecs implements Serializable {
         }
     }
 
-    def stopInstance(instanceId, Closure closure) {
+    def stopInstance(instanceId) {
         def request = new StopInstanceRequest()
         request.setRegionId(region)
         request.setInstanceId(instanceId)
