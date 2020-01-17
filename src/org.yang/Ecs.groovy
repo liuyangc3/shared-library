@@ -10,7 +10,7 @@ package org.yang
         @Grab(group = 'com.aliyun', module = 'aliyun-java-sdk-core', version = '4.4.9'),
         @Grab(group = 'com.aliyun', module = 'aliyun-java-sdk-ecs', version = '4.18.0')
 ])
-class Instance implements Serializable {
+class Ecs
 
     private IAcsClient client
     private String accessKey
