@@ -50,22 +50,20 @@ class Ecs implements Serializable {
 
         try {
             def response = client.getAcsResponse(request)
-            def instance = response.instances[0]
-            closure(instance)
+            return response
         } catch (ServerException e) {
             e.printStackTrace()
         }
     }
 
-    def startInstance(instanceId, Closure closure) {
+    def startInstance(instanceId) {
         def request = new StartInstanceRequest();
         request.setRegionId(region)
         request.setInstanceId(instanceId)
 
         try {
             def response = client.getAcsResponse(request)
-            def disk = response.disks[0]
-            closure(disk)
+            return response
         } catch (ServerException e) {
             e.printStackTrace()
         }
