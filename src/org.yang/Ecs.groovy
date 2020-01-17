@@ -1,53 +1,104 @@
 package org.yang
 
-/**
- Instance ecs API
 
- When Saving pipeline state on class
- must implement the Serializable interface
- */
 @Grapes([
         @Grab(group = 'com.aliyun', module = 'aliyun-java-sdk-core', version = '4.4.9'),
         @Grab(group = 'com.aliyun', module = 'aliyun-java-sdk-ecs', version = '4.18.0')
 ])
-class Ecs
+import com.aliyuncs.DefaultAcsClient
+import com.aliyuncs.IAcsClient
+import com.aliyuncs.exceptions.ServerException
+import com.aliyuncs.profile.DefaultProfile
+import com.aliyuncs.ecs.model.v20140526.*
+import groovy.json.JsonOutput
 
-    private IAcsClient client
-    private String accessKey
-    private String accessSecret
+class Ecs implements Serializable {
+
+    // reference pipeline
     def steps
-    def instance
-    def region
 
-    Instance(steps) {
+    // alicloud ecs properties
+    def region
+    def client
+
+    Ecs(steps) {
         this.steps = steps
     }
 
-    def newClient(region, accessKey, accessSecret) {
-        this.region = region
-        this.accessKey = accessKey
-        this.accessSecret = accessSecret
-        def profile = DefaultProfile.getProfile(region, accessKey, accessSecret);
-        this.client = new DefaultAcsClient(profile);
+    def initClient(region, accessKey, accessSecret) {
+        def profile = DefaultProfile.getProfile(region, accessKey, accessSecret)
+        this.client = new DefaultAcsClient(profile)
     }
 
-    def describeInstance(instanceId) {
-        request = new DescribeInstancesRequest();
-        request.setRegionId(region);
-        request.setInstanceIds(instanceId);
+    def describeInstance(instanceId, Closure closure) {
+        def instanceIds = JsonOutput.toJson([instanceId])
+        def request = new DescribeInstancesRequest();
+        request.setRegionId(region)
+        request.setInstanceIds(instanceIds)
 
         try {
-            DescribeInstancesResponse response = client.getAcsResponse(request);
-
-            System.out.println(new Gson().toJson(response));
+            def response = client.getAcsResponse(request)
+            def instance = response.instances[0]
+            closure(instance)
         } catch (ServerException e) {
-            e.printStackTrace();
-        } catch (ClientException e) {
-            System.out.println("ErrCode:" + e.getErrCode());
-            System.out.println("ErrMsg:" + e.getErrMsg());
-            System.out.println("RequestId:" + e.getRequestId());
+            e.printStackTrace()
         }
     }
 
+    def stopInstance(instanceId, Closure closure) {
+        def request = new StopInstanceRequest()
+        request.setRegionId(region)
+        request.setInstanceId(instanceId)
 
+        try {
+            def response = client.getAcsResponse(request)
+            def instance = response.instances[0]
+            closure(instance)
+        } catch (ServerException e) {
+            e.printStackTrace()
+        }
+    }
+
+    def startInstance(instanceId, Closure closure) {
+        def request = new StartInstanceRequest();
+        request.setRegionId(region)
+        request.setInstanceId(instanceId)
+
+        try {
+            def response = client.getAcsResponse(request)
+            def disk = response.disks[0]
+            closure(disk)
+        } catch (ServerException e) {
+            e.printStackTrace()
+        }
+    }
+
+    def describeDisk(instanceId, diskType, Closure closure) {
+        def request = new DescribeDisksRequest();
+        request.setRegionId(region)
+        request.setInstanceId(instanceId)
+        request.setDiskType(diskType)
+
+        try {
+            def response = client.getAcsResponse(request)
+            def disk = response.disks[0]
+            closure(disk)
+        } catch (ServerException e) {
+            e.printStackTrace()
+        }
+    }
+
+    def createSnapshot(diskId, retentionDays = 0, Closure closure) {
+        def request = new CreateSnapshotRequest();
+        request.setRegionId(region)
+        request.setDiskId(diskId)
+        request.setRetentionDays(retentionDays)
+
+        try {
+            def response = client.getAcsResponse(request)
+            closure(response)
+        } catch (ServerException e) {
+            e.printStackTrace()
+        }
+    }
 }
