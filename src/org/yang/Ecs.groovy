@@ -86,7 +86,7 @@ class Ecs implements Serializable {
         }
     }
 
-    def createSnapshot(diskId, retentionDays = 0, Closure closure) {
+    def createSnapshot(diskId, retentionDays = 0) {
         def request = new CreateSnapshotRequest();
         request.setRegionId(region)
         request.setDiskId(diskId)
@@ -94,7 +94,7 @@ class Ecs implements Serializable {
 
         try {
             def response = client.getAcsResponse(request)
-            closure(response)
+            return response.snapshotId
         } catch (ServerException e) {
             e.printStackTrace()
         }
