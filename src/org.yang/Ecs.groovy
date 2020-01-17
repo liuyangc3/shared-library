@@ -1,10 +1,8 @@
 package org.yang
 
 
-@Grapes([
-        @Grab(group = 'com.aliyun', module = 'aliyun-java-sdk-core', version = '4.4.9'),
-        @Grab(group = 'com.aliyun', module = 'aliyun-java-sdk-ecs', version = '4.18.0')
-])
+@Grab(group = 'com.aliyun', module = 'aliyun-java-sdk-core', version = '4.4.9')
+@Grab(group = 'com.aliyun', module = 'aliyun-java-sdk-ecs', version = '4.18.0')
 import com.aliyuncs.DefaultAcsClient
 import com.aliyuncs.IAcsClient
 import com.aliyuncs.exceptions.ServerException
