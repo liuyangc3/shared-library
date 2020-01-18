@@ -1,4 +1,4 @@
-def alicloud = libraryFromLocalRepo().org.yang
+def alicloud = library(identifier: "t@master", retriever: legacySCM(scm)).org.yang
 
 def instanceName
 def instanceStatus
