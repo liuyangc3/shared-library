@@ -1,4 +1,4 @@
-def alicloud = libraryFromLocalRepo().com.f2pool.alicloud
+def alicloud = libraryFromLocalRepo().org.yang
 
 def instanceName
 def instanceStatus
